@@ -1,27 +1,16 @@
-# setup.py
-
 from setuptools import setup, find_packages
 
 setup(
     name='jackdir',
     version='1.0.0',
-    packages=find_packages(),
+    packages=find_packages(),  # This will automatically find 'jackdir' package
     install_requires=[
-        'pathspec',
-        'pyperclip'
+        'pyperclip',
+        'pathspec'
     ],
     entry_points={
         'console_scripts': [
-            'jackdir=jackdir.main:main',
+            'jackdir=jackdir.main:main',  # Note the 'jackdir.main' module reference
         ],
     },
-    author='Your Name',
-    author_email='your.email@example.com',
-    description='Copy directory tree and file contents to clipboard',
-    classifiers=[
-        'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
-    ],
-    python_requires='>=3.6',
 )
