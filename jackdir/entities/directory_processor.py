@@ -17,25 +17,38 @@ class DirectoryProcessor:
     def generate_tree(self, dir_path):
         tree_lines = []
         for root, dirs, files in os.walk(dir_path):
-            dirs[:] = [d for d in dirs if not self.should_exclude(os.path.join(root, d), True, dir_path)]
-            files[:] = [f for f in files if not self.should_exclude(os.path.join(root, f), False, dir_path)]
+            dirs[:] = sorted([
+                d for d in dirs if not self.should_exclude(os.path.join(root, d), True, dir_path)
+            ])
+            files[:] = sorted([
+                f for f in files if not self.should_exclude(os.path.join(root, f), False, dir_path)
+            ])
             
-            level = os.path.relpath(root, dir_path).count(os.sep)
-            indent = '    ' * level
+            # Calculate the relative path and level
+            rel_path = os.path.relpath(root, dir_path)
             if root == dir_path:
+                level = 0
+                indent = ''
                 tree_lines.append('.')
             else:
+                level = rel_path.count(os.sep) + 1  # Increment level for subdirectories
+                indent = '    ' * level
                 tree_lines.append(f'{indent}{os.path.basename(root)}/')
             
+            sub_indent = '    ' * (level + 1)
             for f in files:
-                tree_lines.append(f'{indent}    {f}')
+                tree_lines.append(f'{sub_indent}{f}')
         return tree_lines
 
     def collect_file_contents(self, dir_path):
-        file_contents = []
+        file_contents_list = []
         for root, dirs, files in os.walk(dir_path):
-            dirs[:] = [d for d in dirs if not self.should_exclude(os.path.join(root, d), True, dir_path)]
-            files[:] = [f for f in files if not self.should_exclude(os.path.join(root, f), False, dir_path)]
+            dirs[:] = sorted([
+                d for d in dirs if not self.should_exclude(os.path.join(root, d), True, dir_path)
+            ])
+            files[:] = sorted([
+                f for f in files if not self.should_exclude(os.path.join(root, f), False, dir_path)
+            ])
             
             for f in files:
                 file_path = os.path.join(root, f)
@@ -46,5 +59,18 @@ class DirectoryProcessor:
                 except Exception as e:
                     content = f'<Error reading file: {e}>'
                 
-                file_contents.append(f'----BEGINNING OF {relative_file_path}------\n{content}\n----END OF {relative_file_path}-------\n')
+                # Collect as tuples for sorting
+                file_contents_list.append((relative_file_path, content))
+        
+        # Sort the file contents by relative file path
+        file_contents_list.sort(key=lambda x: x[0])
+        
+        # Build the final file_contents list
+        file_contents = []
+        for relative_file_path, content in file_contents_list:
+            file_contents.append(
+                f'----BEGINNING OF {relative_file_path}------\n{content}\n----END OF {relative_file_path}-------\n'
+            )
         return file_contents
+
+
