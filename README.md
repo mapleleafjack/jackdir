@@ -1,8 +1,11 @@
 # jackdir
 
-Ever needed to quickly share the layout and content of a project directory? jackdir makes it simple.
-Asking chatGPT about your code? Nothing simpler!
+Asking ChatGPT about your code? Boom, done.
 
+`jackdir` grabs your entire project — files, folders, the whole thing — packs it up, and copies it straight to your clipboard. 
+Just paste it into your favorite LLM and let the magic happen. 
+
+Debug, brainstorm, or flex your masterpiece with zero hassle.
 
 ## How to install
 
