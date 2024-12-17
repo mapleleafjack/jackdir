@@ -1,14 +1,8 @@
 # jackdir
 
-A handy command-line tool to grab your directory's structure and all its file contents, and copy them straight to your clipboard.
 Ever needed to quickly share the layout and content of a project directory? jackdir makes it simple.
+Asking chatGPT about your code? Nothing simpler!
 
-## Key Features:
-
-- Easy Directory Snapshot: Captures the folder structure and files.
-- Content Collection: Gathers the contents of all files in the directory.
-- Respects .gitignore: Automatically skips files and folders you've marked to ignore.
-- Optional Hidden Files: Choose whether to include hidden files and directories
 
 ## How to install
 
@@ -16,6 +10,12 @@ Make sure you have Python 3 installed. Then, just run:
 
 ```bash
 pip install .
+```
+
+If you're running on MacOS and/or you want to install the package globally, you can use pipx
+
+```bash
+pipx install .
 ```
 
 ## How to Use:
@@ -27,23 +27,10 @@ jackdir [directory] [--include-hidden]
 
 - directory: The folder you want to process (if you skip this, it uses your current directory).
 - --include-hidden or -i: Add this if you want to include hidden files and folders.
-Examples:
-
-To process your current directory, excluding hidden stuff:
-
-```bash
-jackdir
-```
-
-To process a specific folder and include everything, even hidden files:
-
-```bash
-jackdir /path/to/directory -i
-```
 
 ## Running Tests:
 
-If you want to run tests to make sure everything's working, type:
+If you want to run tests
 
 ```bash
 pytest tests/
