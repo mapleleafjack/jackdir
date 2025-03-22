@@ -1,8 +1,10 @@
+// src/App.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 import DirectoryTree from './components/DirectoryTree';
 import SidePanel from './components/SidePanel';
+import SelectedItemsTextView from './components/SelectedItemsTextView';  // NEW
 import UIkit from 'uikit';
 import Icons from 'uikit/dist/js/uikit-icons';
 
@@ -32,8 +34,11 @@ function App() {
     }
   };
 
+  // Toggle or untoggle a node in the directory tree
   const handleToggle = (node, isChecked) => {
     const newSelected = new Set(selectedPaths);
+
+    // Recursively select or deselect node & children
     const updateNode = (n, checked) => {
       if (checked) {
         newSelected.add(n.path);
@@ -44,17 +49,18 @@ function App() {
         n.children.forEach(child => updateNode(child, checked));
       }
     };
+
     updateNode(node, isChecked);
     setSelectedPaths(newSelected);
   };
 
+  // Copies the selected items to your server (already in your code)
   const handleCopy = async () => {
     try {
       const response = await axios.post('http://localhost:5000/api/copy_selected', {
         selected_paths: Array.from(selectedPaths),
         include_hidden: includeHidden
       });
-      // UIkit "toast" style notification
       UIkit.notification({
         message: response.data.message,
         status: 'success',
@@ -66,6 +72,13 @@ function App() {
     }
   };
 
+  // NEW: Remove a single item from the selection
+  const handleRemoveSelection = (path) => {
+    const newSelected = new Set(selectedPaths);
+    newSelected.delete(path);
+    setSelectedPaths(newSelected);
+  };
+
   return (
     <div
       className="uk-flex"
@@ -75,7 +88,7 @@ function App() {
         flexDirection: 'row'
       }}
     >
-      {/* Main area (directory tree) */}
+      {/* Left: Full directory tree */}
       <div className="uk-flex-1 uk-overflow-auto uk-padding-small">
         {treeData && (
           <DirectoryTree
@@ -85,14 +98,19 @@ function App() {
           />
         )}
       </div>
-
-      {/* Side panel */}
-      <div
-        style={{
-          width: '300px',
-          overflow: 'hidden'
-        }}
-      >
+  
+      {/* Middle: Selected items */}
+      <div className="uk-flex-1 uk-overflow-auto uk-padding-small">
+        {treeData && (
+          <SelectedItemsTextView
+            data={treeData}
+            selectedPaths={selectedPaths}
+          />
+        )}
+      </div>
+  
+      {/* Right: Side panel */}
+      <div style={{ width: '300px', overflow: 'hidden' }}>
         <div className="uk-overflow-auto uk-padding-small">
           <SidePanel
             includeHidden={includeHidden}
@@ -102,7 +120,7 @@ function App() {
         </div>
       </div>
     </div>
-  );
+  );  
 }
 
 export default App;

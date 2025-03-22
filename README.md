@@ -30,12 +30,20 @@ Open your terminal and type:
 jackdir [directory] [--include-hidden]
 ```
 
+
+
+- directory: The folder you want to process (if you skip this, it uses your current directory).
+- --include-hidden or -i: Add this if you want to include hidden files and folders.
+
+## Running the frontend:
 ```bash
 jackdir-flask
 ```
 
-- directory: The folder you want to process (if you skip this, it uses your current directory).
-- --include-hidden or -i: Add this if you want to include hidden files and folders.
+and in another terminal 
+```bash
+cd client && npm start
+```
 
 ## Running Tests:
 

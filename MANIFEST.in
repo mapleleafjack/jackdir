@@ -1,0 +1,3 @@
+recursive-include jackdir/client *
+recursive-include jackdir *
+prune tests

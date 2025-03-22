@@ -109,7 +109,9 @@ def api_copy_selected():
     })
 
 def run_flask_app():
-    app.run(debug=True)
+    # Disable debugger pin and reloader for daemon thread compatibility
+    os.environ['FLASK_DEBUG'] = '1'
+    app.run(debug=True, use_reloader=False)
 
 if __name__ == "__main__":
     run_flask_app()
