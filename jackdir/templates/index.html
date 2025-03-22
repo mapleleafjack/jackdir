@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Jackdir Collapsible Tree</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 1rem;
+      }
+      .error {
+        color: red;
+      }
+      .success {
+        color: green;
+      }
+      ul {
+        list-style-type: none;
+        margin: 0;
+        padding-left: 1rem;
+      }
+      li {
+        margin: 4px 0;
+      }
+      .toggle-btn {
+        cursor: pointer;
+        margin-right: 5px;
+      }
+      .collapsed > ul {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Jackdir Collapsible Tree</h1>
+
+    <div>
+      <label>
+        Directory:
+        <input type="text" id="directory" value="." />
+      </label>
+      <label style="margin-left: 1rem;">
+        <input type="checkbox" id="includeHidden" />
+        Include Hidden
+      </label>
+      <button id="scanBtn" style="margin-left: 1rem;">Scan</button>
+    </div>
+
+    <div id="messages" style="margin-top: 1rem;"></div>
+
+    <div id="treeContainer" style="margin-top: 1rem;"></div>
+
+    <!-- "Copy Selected" only copies files, not folders -->
+    <button id="copyBtn" style="margin-top: 1rem; display: none;">Copy Selected</button>
+
+    <script>
+      const messagesEl = document.getElementById("messages");
+      const treeContainer = document.getElementById("treeContainer");
+      const copyBtn = document.getElementById("copyBtn");
+
+      /**
+       * Utility: show a message
+       */
+      function showMessage(msg, isError = false) {
+        messagesEl.textContent = msg;
+        messagesEl.className = isError ? "error" : "success";
+      }
+
+      /**
+       * Recursively build an <ul> for the tree node
+       * If the node is a directory, toggling its checkbox 
+       * automatically toggles all children (files AND subfolders).
+       */
+      function buildTreeDOM(node) {
+        const li = document.createElement("li");
+
+        // Toggle button if directory with children
+        let toggleSpan = null;
+        if (node.type === "directory" && node.children && node.children.length > 0) {
+          toggleSpan = document.createElement("span");
+          toggleSpan.textContent = "[–]"; // default expanded
+          toggleSpan.className = "toggle-btn";
+          toggleSpan.addEventListener("click", () => {
+            li.classList.toggle("collapsed");
+            if (toggleSpan.textContent === "[–]") {
+              toggleSpan.textContent = "[+]";
+            } else {
+              toggleSpan.textContent = "[–]";
+            }
+          });
+          li.appendChild(toggleSpan);
+        } else {
+          // A spacer to align (if it's a file)
+          const spacer = document.createElement("span");
+          spacer.style.display = "inline-block";
+          spacer.style.width = "18px";
+          li.appendChild(spacer);
+        }
+
+        // The checkbox
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = node.path;
+        checkbox.dataset.type = node.type; // "file" or "directory"
+        li.appendChild(checkbox);
+
+        // On change: if this is a directory, auto toggle all children
+        checkbox.addEventListener("change", (e) => {
+          if (node.type === "directory") {
+            // Check/uncheck all descendant checkboxes
+            const isChecked = e.target.checked;
+            const descendants = li.querySelectorAll("input[type='checkbox']");
+            descendants.forEach((desc) => {
+              desc.checked = isChecked;
+            });
+          }
+        });
+
+        // The node name
+        const textSpan = document.createElement("span");
+        textSpan.textContent = " " + node.name;
+        li.appendChild(textSpan);
+
+        // If directory, recursively build children
+        if (node.type === "directory" && node.children && node.children.length > 0) {
+          const ul = document.createElement("ul");
+          node.children.forEach(child => {
+            ul.appendChild(buildTreeDOM(child));
+          });
+          li.appendChild(ul);
+        }
+
+        return li;
+      }
+
+      /**
+       * Handler: "Scan" button
+       */
+      async function handleScan() {
+        showMessage("");
+        treeContainer.innerHTML = "";
+        copyBtn.style.display = "none";
+
+        const directory = document.getElementById("directory").value;
+        const includeHidden = document.getElementById("includeHidden").checked;
+
+        try {
+          const resp = await fetch("/api/tree", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              directory,
+              include_hidden: includeHidden
+            })
+          });
+          const data = await resp.json();
+          if (data.error) {
+            showMessage(data.error, true);
+            return;
+          }
+          if (!data.tree) {
+            showMessage("No tree data returned.", true);
+            return;
+          }
+
+          const rootUL = document.createElement("ul");
+          rootUL.appendChild(buildTreeDOM(data.tree));
+          treeContainer.appendChild(rootUL);
+
+          // If we have a valid tree, show the "Copy Selected" button
+          copyBtn.style.display = "inline-block";
+        } catch (err) {
+          showMessage("Error scanning: " + err.toString(), true);
+        }
+      }
+
+      /**
+       * Gather all checked checkboxes that represent FILES only
+       */
+      function getSelectedFilePaths() {
+        const allChecked = treeContainer.querySelectorAll("input[type='checkbox']:checked");
+        // Filter only data-type="file"
+        const filePaths = [];
+        allChecked.forEach((cb) => {
+          if (cb.dataset.type === "file") {
+            filePaths.push(cb.value);
+          }
+        });
+        return filePaths;
+      }
+
+      /**
+       * Handler: "Copy Selected" button
+       */
+      async function handleCopySelected() {
+        showMessage("");
+        const filePaths = getSelectedFilePaths();
+        if (filePaths.length === 0) {
+          showMessage("No files selected.", true);
+          return;
+        }
+        const includeHidden = document.getElementById("includeHidden").checked;
+
+        try {
+          const resp = await fetch("/api/copy_selected", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              selected_paths: filePaths,
+              include_hidden: includeHidden
+            })
+          });
+          const data = await resp.json();
+          if (data.error) {
+            showMessage(data.error, true);
+          } else if (data.message) {
+            showMessage(data.message, false);
+          }
+        } catch (err) {
+          showMessage("Error copying: " + err.toString(), true);
+        }
+      }
+
+      document.getElementById("scanBtn").addEventListener("click", handleScan);
+      copyBtn.addEventListener("click", handleCopySelected);
+    </script>
+  </body>
+</html>

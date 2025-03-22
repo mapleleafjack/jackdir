@@ -2,15 +2,17 @@ from setuptools import setup, find_packages
 
 setup(
     name='jackdir',
-    version='1.0.0',
-    packages=find_packages(),  # This will automatically find 'jackdir' package
+    version='1.1.0',
+    packages=find_packages(),
     install_requires=[
         'pyperclip',
-        'pathspec'
+        'pathspec',
+        'flask',
     ],
     entry_points={
         'console_scripts': [
-            'jackdir=jackdir.main:main',  # Note the 'jackdir.main' module reference
+            'jackdir=jackdir.main:main',
+            'jackdir-flask=jackdir.flask_app:run_flask_app'
         ],
     },
 )
