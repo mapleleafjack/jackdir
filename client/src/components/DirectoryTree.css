@@ -1,0 +1,47 @@
+.tree-row {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    /* Ensure equal spacing */
+    gap: 12px;
+  }
+  
+  .tree-row:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .tree-row.selected {
+    background-color: #cce5ff;
+  }
+  
+
+    /* Improved toggle button styling */
+    .toggle-button {
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 4px; /* Increased padding for easier clicking */
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+  
+  .toggle-button:hover {
+    background-color: #e0e0e0;
+  }
+
+  .icon {
+    width: 30px;
+    text-align: center;
+  }
+  
+  .name {
+    flex: 1; /* This makes the name take up the remaining space */
+  }
+  
+  .tree-children {
+    padding-left: 20px; /* Indent children to show hierarchy */
+  }
+  

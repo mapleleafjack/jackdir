@@ -1,50 +1,64 @@
 import React, { useState } from 'react';
+import './DirectoryTree.css'; // Import the CSS file for styles
 
 const DirectoryTree = ({ data, selectedPaths, onToggle }) => {
   const [isOpen, setIsOpen] = useState(true);
-  const isChecked = selectedPaths.has(data.path);
+  const isSelected = selectedPaths.has(data.path);
+
+  // Toggle selection when clicking the row
+  const handleRowClick = () => {
+    onToggle(data, !isSelected);
+  };
+
+  // Toggle open/closed without triggering row selection
+  const toggleOpen = (e) => {
+    e.stopPropagation();
+    setIsOpen(!isOpen);
+  };
+
+  // Order children: directories first then files, both alphabetically by name.
+  const sortedChildren =
+    data.children &&
+    data.children.slice().sort((a, b) => {
+      if (a.type === b.type) {
+        return a.name.localeCompare(b.name);
+      }
+      return a.type === 'directory' ? -1 : 1;
+    });
 
   return (
-    <ul className="uk-list uk-list-collapse">
-      <li>
-        <div className="uk-grid-small" data-uk-grid>
-          <div className="uk-width-auto">
-            {data.type === 'directory' && (
-              <button
-                className="uk-icon-button"
-                onClick={() => setIsOpen(!isOpen)}
-                data-uk-icon={`icon: ${isOpen ? 'minus' : 'plus'}`}
-              />
-            )}
-          </div>
-          <div className="uk-width-auto">
-            <input 
-              className="uk-checkbox"
-              type="checkbox"
-              checked={isChecked}
-              onChange={(e) => onToggle(data, e.target.checked)}
-            />
-          </div>
-          <div className="uk-width-expand">
-            <span className="uk-margin-small-left">
-              {data.type === 'directory' ? '📁' : '📄'} {data.name}
-            </span>
-          </div>
+    <div>
+      <div 
+        className={`tree-row ${isSelected ? 'selected' : ''}`}
+        onClick={handleRowClick}
+      >
+        {/* Reserve space for the toggle button */}
+        <div className="toggle-container">
+          {data.type === 'directory' && (
+            <button className="toggle-button" onClick={toggleOpen}>
+              {isOpen ? '-' : '+'}
+            </button>
+          )}
         </div>
-        {isOpen && data.children && data.children.length > 0 && (
-          <div className="uk-margin-left">
-            {data.children.map(child => (
-              <DirectoryTree 
-                key={child.path} 
-                data={child} 
-                selectedPaths={selectedPaths} 
-                onToggle={onToggle} 
-              />
-            ))}
-          </div>
-        )}
-      </li>
-    </ul>
+        <span className="icon">
+          {data.type === 'directory' ? '📁' : '📄'}
+        </span>
+        <span className="name">{data.name}</span>
+      </div>
+
+      {isOpen && sortedChildren && sortedChildren.length > 0 && (
+        <div className="tree-children">
+          {sortedChildren.map(child => (
+            <DirectoryTree
+              key={child.path}
+              data={child}
+              selectedPaths={selectedPaths}
+              onToggle={onToggle}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
