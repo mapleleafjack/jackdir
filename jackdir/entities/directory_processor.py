@@ -1,18 +1,53 @@
 import os
+from pathspec import PathSpec
 
 class DirectoryProcessor:
     
     def __init__(self, include_hidden=False, spec=None):
         self.include_hidden = include_hidden
-        self.spec = spec
+        
+        # Default patterns to exclude common files/directories
+        default_patterns = [
+            'node_modules/',
+            '__pycache__/',
+            '*.py[co]',
+            '*.pyd',
+            '.env',
+            'venv/',
+            'env/',
+            '.venv/',
+            'dist/',
+            'build/',
+            '*.egg-info/',
+            'package-lock.json',
+            'yarn.lock',
+            'pnpm-lock.yaml',
+            'venv/'
+        ]
+        default_spec = PathSpec.from_lines('gitwildmatch', default_patterns)
+        
+        # Combine with provided spec if available
+        if spec is not None:
+            provided_patterns = [p.pattern for p in spec.patterns]
+            combined_patterns = default_patterns + provided_patterns
+            self.spec = PathSpec.from_lines('gitwildmatch', combined_patterns)
+        else:
+            self.spec = default_spec
 
     def should_exclude(self, path, is_dir, dir_path):
         name = os.path.basename(path)
         if not self.include_hidden and name.startswith('.'):
             return True
-        if self.spec and self.spec.match_file(os.path.relpath(path, dir_path)):
-            return True
-        return False
+        
+        # Get relative path and normalize to POSIX-style
+        rel_path = os.path.relpath(path, dir_path).replace(os.sep, '/')
+        
+        # Append trailing slash for directories to match gitignore patterns
+        if is_dir:
+            rel_path += '/'
+        
+        return self.spec.match_file(rel_path)
+
 
     def generate_tree(self, dir_path):
         tree_lines = []
