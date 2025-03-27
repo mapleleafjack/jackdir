@@ -1,23 +1,22 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory
+import logging
+from flask import Flask, request, jsonify, send_from_directory
 import os
-from flask_cors import CORS  # Import Flask-CORS
 from jackdir.entities.directory_processor import DirectoryProcessor
 from jackdir.adapters.clipboard_adapter import ClipboardAdapter
 from jackdir.use_cases.copy_to_clipboard import CopyMultiplePathsUseCase
 from jackdir.main import load_gitignore_spec
 
-app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+app = Flask(__name__, static_folder='client/build')
 
+# Serve React App
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):
-    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
+    if path != "" and os.path.exists(app.static_folder + '/' + path):
         return send_from_directory(app.static_folder, path)
     else:
         return send_from_directory(app.static_folder, 'index.html')
 
-app.static_folder = '../client/build/static'
 
 @app.route("/api/tree", methods=["POST"])
 def api_tree():
@@ -113,6 +112,19 @@ def run_flask_app():
     os.environ['FLASK_DEBUG'] = '1'
     os.environ['FLASK_RUN_PORT'] = '6789'
 
+    # Set static folder to React build directory
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    static_path = os.path.join(current_dir, 'client', 'build')
+    app.static_folder = static_path
+    
+    # Logging to verify static folder path
+    logging.basicConfig(level=logging.INFO)
+    app.logger.info(f"Serving static files from: {app.static_folder}")
+    if not os.path.exists(app.static_folder):
+        app.logger.error("Static folder does not exist!")
+    else:
+        app.logger.info(f"Static folder contents: {os.listdir(app.static_folder)}")
+    
     app.run(port=6789, debug=True, use_reloader=False)
 
 if __name__ == "__main__":
