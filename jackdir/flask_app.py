@@ -111,9 +111,9 @@ def api_copy_selected():
 def run_flask_app():
     # Disable debugger pin and reloader for daemon thread compatibility
     os.environ['FLASK_DEBUG'] = '1'
-    os.environ['FLASK_RUN_PORT'] = '6666'
+    os.environ['FLASK_RUN_PORT'] = '6789'
 
-    app.run(port=6666, debug=True, use_reloader=False)
+    app.run(port=6789, debug=True, use_reloader=False)
 
 if __name__ == "__main__":
     run_flask_app()

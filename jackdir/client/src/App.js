@@ -22,7 +22,7 @@ function App() {
 
   const handleScan = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/tree', {
+      const response = await axios.post('http://localhost:6789/api/tree', {
         path: '.',
         include_hidden: includeHidden,
         respect_gitignore: true,
@@ -57,7 +57,7 @@ function App() {
   // Copies the selected items to your server (already in your code)
   const handleCopy = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/copy_selected', {
+      const response = await axios.post('http://localhost:6789/api/copy_selected', {
         selected_paths: Array.from(selectedPaths),
         include_hidden: includeHidden
       });
@@ -71,14 +71,7 @@ function App() {
       console.error('Error copying:', error);
     }
   };
-
-  // NEW: Remove a single item from the selection
-  const handleRemoveSelection = (path) => {
-    const newSelected = new Set(selectedPaths);
-    newSelected.delete(path);
-    setSelectedPaths(newSelected);
-  };
-
+  
   return (
     <div
       className="uk-flex"

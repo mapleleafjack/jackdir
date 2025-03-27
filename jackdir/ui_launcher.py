@@ -12,7 +12,7 @@ def run_flask():
     env = os.environ.copy()
     env['FLASK_APP'] = 'jackdir.flask_app'
     # run on port 6666
-    env['FLASK_RUN_PORT'] = '6666'
+    env['FLASK_RUN_PORT'] = '6789'
     
     subprocess.run([sys.executable, "-m", "flask", "run"], env=env)
 
