@@ -1,65 +1,67 @@
-import React, { useState } from 'react';
-import './DirectoryTree.css'; // Import the CSS file for styles
+"use client"
+
+import { useState } from "react"
+import "./DirectoryTree.css" // Import the CSS file for styles
 
 const DirectoryTree = ({ data, selectedPaths, onToggle }) => {
-  const [isOpen, setIsOpen] = useState(true);
-  const isSelected = selectedPaths.has(data.path);
+  const [isOpen, setIsOpen] = useState(true)
+  const isSelected = selectedPaths.has(data.path)
 
   // Toggle selection when clicking the row
   const handleRowClick = () => {
-    onToggle(data, !isSelected);
-  };
+    onToggle(data, !isSelected)
+  }
 
   // Toggle open/closed without triggering row selection
   const toggleOpen = (e) => {
-    e.stopPropagation();
-    setIsOpen(!isOpen);
-  };
+    e.stopPropagation()
+    setIsOpen(!isOpen)
+
+    // Add a small animation to the toggle button
+    if (e.target.classList.contains("toggle-button")) {
+      e.target.style.transform = "scale(1.2)"
+      setTimeout(() => {
+        if (e.target && e.target.style) {
+          e.target.style.transform = "scale(1)"
+        }
+      }, 200)
+    }
+  }
 
   // Order children: directories first then files, both alphabetically by name.
   const sortedChildren =
     data.children &&
     data.children.slice().sort((a, b) => {
       if (a.type === b.type) {
-        return a.name.localeCompare(b.name);
+        return a.name.localeCompare(b.name)
       }
-      return a.type === 'directory' ? -1 : 1;
-    });
+      return a.type === "directory" ? -1 : 1
+    })
 
   return (
     <div>
-      <div 
-        className={`tree-row ${isSelected ? 'selected' : ''}`}
-        onClick={handleRowClick}
-      >
+      <div className={`tree-row ${isSelected ? "selected" : ""}`} onClick={handleRowClick}>
         {/* Reserve space for the toggle button */}
         <div className="toggle-container">
-          {data.type === 'directory' && (
+          {data.type === "directory" && (
             <button className="toggle-button" onClick={toggleOpen}>
-              {isOpen ? '-' : '+'}
+              {isOpen ? "−" : "+"}
             </button>
           )}
         </div>
-        <span className="icon">
-          {data.type === 'directory' ? '📁' : '📄'}
-        </span>
+        <span className="icon">{data.type === "directory" ? "📁" : "📄"}</span>
         <span className="name">{data.name}</span>
       </div>
 
       {isOpen && sortedChildren && sortedChildren.length > 0 && (
         <div className="tree-children">
-          {sortedChildren.map(child => (
-            <DirectoryTree
-              key={child.path}
-              data={child}
-              selectedPaths={selectedPaths}
-              onToggle={onToggle}
-            />
+          {sortedChildren.map((child) => (
+            <DirectoryTree key={child.path} data={child} selectedPaths={selectedPaths} onToggle={onToggle} />
           ))}
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default DirectoryTree;
+export default DirectoryTree

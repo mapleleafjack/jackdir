@@ -1,47 +1,67 @@
 .tree-row {
-    display: flex;
-    align-items: center;
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
-    cursor: pointer;
-    /* Ensure equal spacing */
-    gap: 12px;
-  }
-  
-  .tree-row:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .tree-row.selected {
-    background-color: #cce5ff;
-  }
-  
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  gap: 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
 
-    /* Improved toggle button styling */
-    .toggle-button {
-    border: none;
-    background: transparent;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 4px; /* Increased padding for easier clicking */
-    border-radius: 4px;
-    transition: background-color 0.2s;
-  }
-  
-  .toggle-button:hover {
-    background-color: #e0e0e0;
-  }
+.tree-row:hover {
+  background-color: #f5f5f5;
+}
 
-  .icon {
-    width: 30px;
-    text-align: center;
+.tree-row.selected {
+  background-color: #e1f0ff;
+  border-left: 3px solid #1e87f0;
+}
+
+/* Improved toggle button styling */
+.toggle-button {
+  border: none;
+  background: transparent;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-button:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.1);
+}
+
+.icon {
+  width: 24px;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tree-children {
+  padding-left: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  
-  .name {
-    flex: 1; /* This makes the name take up the remaining space */
+  to {
+    opacity: 1;
   }
-  
-  .tree-children {
-    padding-left: 20px; /* Indent children to show hierarchy */
-  }
-  
+}

@@ -36,3 +36,208 @@
     transform: rotate(360deg);
   }
 }
+
+/* Add these styles to the end of App.css */
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .uk-width-1-2\@m,
+  .uk-width-1-1\@s {
+    width: 100%;
+    border-right: none !important;
+    border-bottom: 1px solid #e5e5e5;
+    max-height: 50vh;
+  }
+
+  /* Adjust button positions on mobile */
+  .copy-button {
+    bottom: 20px !important;
+    right: 20px !important;
+  }
+
+  .chat-fab {
+    bottom: 90px !important;
+    right: 20px !important;
+  }
+}
+
+/* Smooth transitions */
+.uk-card,
+.uk-button,
+.uk-input,
+.tree-row {
+  transition: all 0.2s ease;
+}
+
+/* Improved scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Copy button in bottom right */
+.copy-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #222;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.copy-button:hover {
+  background-color: #333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Google-style floating action button */
+.chat-fab {
+  position: fixed;
+  bottom: 90px; /* Moved up to avoid overlap */
+  right: 20px; /* Fixed: Properly aligned to the right */
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #1e87f0;
+  color: white;
+  border: none;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.chat-fab:hover {
+  background-color: #0e77e0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  transform: scale(1.05);
+}
+
+/* Message count badge */
+.message-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #f0506e;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Floating chat panel */
+.chat-panel-floating {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 350px;
+  height: 500px;
+  max-height: 80vh; /* Ensure it doesn't go off screen */
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  animation: fadeIn 0.3s ease;
+  overflow: hidden;
+}
+
+.chat-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e5e5;
+  background: white;
+  z-index: 2;
+}
+
+.chat-panel-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.chat-header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.chat-action-button,
+.chat-close-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  margin-left: 5px;
+}
+
+.chat-action-button:hover,
+.chat-close-button:hover {
+  background-color: #f0f0f0;
+}
+
+.chat-action-button {
+  color: #666;
+}
+
+.chat-action-button:hover {
+  color: #f0506e;
+}
+
+.chat-panel-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}

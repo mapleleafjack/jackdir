@@ -14,6 +14,7 @@ setup(
         'pathspec',
         'flask',
         'Flask-Cors',
+        'openai',
     ],
     entry_points={
         'console_scripts': [
